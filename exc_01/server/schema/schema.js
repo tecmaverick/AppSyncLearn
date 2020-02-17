@@ -10,6 +10,13 @@ const usersData = [
     {id:'6',name:'zota',age:16}
 ];
 
+const HobbyData = [
+    {id:'1',name:'Programming', userid:'1'},
+    {id:'2',name:'Puzzles', userid:'2'},
+    {id:'3',name:'Racing', userid:'1'},
+    {id:'4',name:'Hiking', userid:'3'}
+];
+
 const {
     GraphQLObjectType,
     GraphQLID,
@@ -17,6 +24,20 @@ const {
     GraphQLInt,
     GraphQLSchema
 } = graphql
+
+const HobbyType = new GraphQLObjectType({
+    name:"Hobby",
+    description:"User hobbies",
+    fields:()=>({
+        id:{type:GraphQLString},
+        name:{type:GraphQLString},
+        user:{type:UserType,
+        resolve(parent,args){
+            console.log(parent)
+            return _.find(usersData,{id:parent.userid})
+        }}
+    })
+});
 
 const UserType = new GraphQLObjectType({
     name:'User',
@@ -37,6 +58,13 @@ const RootQuery = new GraphQLObjectType({
             args: {id: { type:GraphQLString}},
             resolve(parent, args){
                 return _.find(usersData,{id: args.id})
+            }
+        },
+        hobby:{
+            type:HobbyType,
+            args:{id:{type:GraphQLString}},
+            resolve(parent,args){
+                return _.find(HobbyData,{id:args.id})
             }
         }
 }})
